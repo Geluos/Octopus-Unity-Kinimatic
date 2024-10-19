@@ -18,16 +18,16 @@ public class Octopussy : MonoBehaviour
 
     public GameObject Sphere;
 
-    [Range(-180, 180)]
+    [Range(-120, 120)]
     public float FirstY;
 
-    [Range(-30, 30)]
+    [Range(0, 40)]
     public float SecondX;
 
-    [Range(-30, 30)]
+    [Range(10, 60)]
     public float ThirdX;
 
-    [Range(-30, 30)]
+    [Range(0, 40)]
     public float ForthX;
 
     Quaternion r1, r2, r3, r4;
@@ -59,7 +59,7 @@ public class Octopussy : MonoBehaviour
         joint4.transform.localRotation = Quaternion.Slerp(joint4.transform.localRotation, target4, Time.deltaTime * 2.0f);
 
         List<Vector3> newJ = new List<Vector3>() { newJ1, newJ2, newJ3, newJ4, sp };
-        List<float> lFloatY = new List<float>() { FirstY, 0f, 0f, 0f };
+        //List<float> lFloatY = new List<float>() { FirstY, 0f, 0f, 0f };
         List<float> lFloatX = new List<float>() { 0f, SecondX, ThirdX, ForthX };
         List<Quaternion> rot = new List<Quaternion>() { r1, r2, r3, r4 };
 
@@ -74,12 +74,17 @@ public class Octopussy : MonoBehaviour
             for (int j = 1; j < newJ.Count; j++)
             {
                 Vector3 vector1 = newJ[j] - newJ[i];
-                vector1 = Quaternion.Euler(rot[i].x + lFloatX[i], rot[i].y + lFloatY[i], rot[i].z) * vector1;
+                vector1 = Quaternion.Euler(rot[i].x + lFloatX[i], rot[i].y, rot[i].z) * vector1;
                 newJ[j] = newJ[i] + vector1;
             }
             // var t =Instantiate(Sphere);
             //t.transform.position = newJ.Last();
         }
+
+        Vector2 vy = new Vector2(newJ[4].x*Mathf.Cos(Mathf.PI/180f * (FirstY - 90)) - newJ[4].z * Mathf.Sin(Mathf.PI / 180f * (FirstY - 90))
+            , newJ[4].x * Mathf.Sin(Mathf.PI / 180f * (FirstY - 90)) + newJ[4].z * Mathf.Cos(Mathf.PI / 180f * (FirstY - 90)));
+
+        newJ[4] = new Vector3(vy.y, newJ[4].y, vy.x);
 
         Sphere.transform.position = newJ[4];
 
